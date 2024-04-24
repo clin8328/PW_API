@@ -35,7 +35,7 @@ app.listen(port, () => {
 
 //calculate roof perimeter and area based on an address
 async function calculateRoof(address: string){
-    const API_KEY = 'AIzaSyAXae7z2u0mVVFj3nzGWW8HY4FpVFKX0pU';
+    const API_KEY = process.env.Google_API;
 
     const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
     const geocodingResponse = await fetch(geocodingUrl);
