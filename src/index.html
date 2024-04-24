@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Input</title>
+    <style>
+        #autocomplete {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .error-input {
+            border: 1px solid red !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Input Your Address</h1>
+    <input type="text" id="autocomplete" placeholder="Enter your address">
+    <div id="error-msg" style="color: red;"></div>
+    <button id="submitBtn">Submit</button>
+    <div id="output"></div>
+
+    <script>
+        function initAutocomplete() {
+            var autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('autocomplete'), {
+                    types: ['geocode'],
+                    componentRestrictions: { country: 'US' }
+                });
+
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    // User entered the name of a Place that was not suggested and
+                    // pressed the Enter key, or the Place Details request failed.
+                    console.error('No details available for input: ', place.name);
+                    return;
+                }
+            });
+        }
+        
+        // Function to handle button click event
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const address = document.getElementById('autocomplete').value;
+
+            if (address.trim() === '') {
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.textContent = 'Please enter an address';
+                document.getElementById('autocomplete').classList.add('error-input');
+                return;
+            } else {
+                // Clear error message and remove error class
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.textContent = '';
+                document.getElementById('autocomplete').classList.remove('error-input');
+            }
+
+            try {
+                const response = await fetch('/calculate-roof', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ address: address })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);
+                    const html = `Roof Perimeter: ${data.perimeter.toFixed(2)} <br> Roof Area: ${data.area.toFixed(2)} sqft`;
+
+                    const outputDiv = document.getElementById('output');
+                    outputDiv.innerHTML = html;
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAXae7z2u0mVVFj3nzGWW8HY4FpVFKX0pU&libraries=places&callback=initAutocomplete" defer></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Inital Ignores:
+node_modules
+.env
+.txt
+dist
+test.py
