@@ -1,6 +1,8 @@
 import express from 'express';
 import path from 'path';
-    
+import https from 'https';
+import fs from 'fs';
+
 require('dotenv').config();
 const app = express();
 const port = 3000;
@@ -28,8 +30,17 @@ app.post('/calculate-roof', async (req, res) => {
     }
 });
 
+// Configure HTTPS options
+const httpsOptions = {
+    key: fs.readFileSync('../cert/key.pem'),
+    cert: fs.readFileSync('../cert/cert.pem')
+};
+
+// Create HTTPS server
+const server = https.createServer(httpsOptions, app);
+
 // Start the server
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
