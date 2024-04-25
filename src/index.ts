@@ -2,11 +2,13 @@ import express from 'express';
 import path from 'path';
 import https from 'https';
 import fs from 'fs';
+const cors = require('cors')
 
 require('dotenv').config();
 const app = express();
 const port = 3000;
 
+app.use(cors())
 // Middleware to parse JSON bodies
 app.use(express.json());
 
